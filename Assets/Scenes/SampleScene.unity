@@ -272,6 +272,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7017364130595474197, guid: 9efe27e217501324fbc1f744e570fcad, type: 3}
     - target: {fileID: 7977865227551217453, guid: c2dcfbd7e692c1a4db7b9295d1bd04ed, type: 3}
+      propertyPath: spacing
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7977865227551217453, guid: c2dcfbd7e692c1a4db7b9295d1bd04ed, type: 3}
       propertyPath: boardWidth
       value: 20
       objectReference: {fileID: 0}

@@ -10,9 +10,11 @@ public class GameBoard : MonoBehaviour
     public int boardHeight = 25;
     public GameObject cell;
     GameObject[,] stateOfBoard;
+    public float spacing = 1.1f;
     void Start()
     {
         drawBoard();
+        drawBackground();
     }
 
     // Update is called once per frame
@@ -23,14 +25,21 @@ public class GameBoard : MonoBehaviour
     private void drawBoard()
     {
         Vector2 position;
-        float spacing = 1.1f;
+
         for(int i=0; i < boardWidth; i++)
         {
             for(int j =0; j < boardHeight; j++)
             {
-                position = new Vector3(i, j, 0) * spacing;
+                position = new Vector3(i-boardWidth/2, j-boardHeight/2, 0) * spacing;
                 Instantiate(cell, position , Quaternion.identity);
             }
         }
+
+
+    }
+    private void drawBackground()
+    {
+        Vector2 position = new Vector2(0, 0);
+        transform.position = position;
     }
 }
