@@ -9,8 +9,8 @@ public class GameBoard : MonoBehaviour
     public int boardWidth = 50;
     public int boardHeight = 25;
     public GameObject cell;
-    GameObject[,] stateOfBoard;
-    public float spacing = 1.1f;
+    public GameObject[,] stateOfBoard;
+    public float spacing = 1.5f;
     void Start()
     {
         drawBoard();
@@ -31,7 +31,9 @@ public class GameBoard : MonoBehaviour
             for(int j =0; j < boardHeight; j++)
             {
                 position = new Vector3(i-boardWidth/2, j-boardHeight/2, 0) * spacing;
-                Instantiate(cell, position , Quaternion.identity);
+                GameObject newCell = Instantiate(cell, position , Quaternion.identity);
+                newCell.gameObject.name = "cell" + i+j;
+
             }
         }
 
