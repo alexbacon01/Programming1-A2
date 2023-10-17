@@ -10,6 +10,7 @@ public enum CellState
 public class Cell : MonoBehaviour
 {
     private CellState state;
+    private GameObject[] neighbours;
     // Start is called before the first frame update
     
     void Start()
@@ -43,5 +44,10 @@ public class Cell : MonoBehaviour
     public CellState getState()
     {
         return state;
+    }
+
+    public void setNeighbours(GameObject[] neighbours)
+    {
+
     }
 }

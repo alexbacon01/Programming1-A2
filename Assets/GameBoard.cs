@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class GameBoard : MonoBehaviour
 {
@@ -33,18 +34,11 @@ public class GameBoard : MonoBehaviour
         {
             for(int j =0; j < boardHeight; j++)
             {
+                position = new Vector3(i - boardWidth / 2, j - boardHeight / 2, 0) * spacing;
                 numOfCells++;
-                position = new Vector3(i-boardWidth/2, j-boardHeight/2, 0) * spacing;
-                GameObject newCell = Instantiate(cell, position , Quaternion.identity);
-               // newCell.AddComponent<Cell>();   
-                newCell.GetComponent<Cell>().setState(CellState.Dead);
-                newCell.gameObject.name = "cell" + numOfCells;
-                stateOfBoard[i, j] = newCell;
+                stateOfBoard[i, j] = makeNewCell(numOfCells, position) ;
             }
         }
-
-        stateOfBoard[1, 2].GetComponent<Cell>().setState(CellState.Alive);
-
     }
     private void drawBackground()
     {
@@ -55,5 +49,13 @@ public class GameBoard : MonoBehaviour
     private void checkRules(GameObject cell)
     {
 
+    }
+
+    private GameObject makeNewCell(int numOfCells, Vector2 pos)
+    {
+        GameObject newCell = Instantiate(cell, pos, Quaternion.identity);
+        newCell.GetComponent<Cell>().setState(CellState.Dead);
+        newCell.gameObject.name = "cell" + numOfCells;
+        return newCell;
     }
 }
