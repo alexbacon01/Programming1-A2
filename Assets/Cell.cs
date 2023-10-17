@@ -10,7 +10,6 @@ public enum CellState
 public class Cell : MonoBehaviour
 {
     private CellState state;
-    public GameObject cellPrefab;
     // Start is called before the first frame update
     
     void Start()
@@ -44,12 +43,5 @@ public class Cell : MonoBehaviour
     public CellState getState()
     {
         return state;
-    }
-
-    public GameObject makeGameObject(int cellNum)
-    {
-        string cellName = "cell" + cellNum;
-        GameObject newCell = new GameObject(cellName);
-        return newCell;
     }
 }
