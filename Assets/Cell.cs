@@ -11,6 +11,8 @@ public class Cell : MonoBehaviour
 {
     private CellState state;
     private GameObject[] neighbours;
+    private int colPos;
+    private int rowPos;
     // Start is called before the first frame update
     
     void Start()
@@ -49,5 +51,23 @@ public class Cell : MonoBehaviour
     public void setNeighbours(GameObject[] neighbours)
     {
 
+    }
+    public GameObject[] getNeighbours()
+    {
+        return neighbours;
+    }
+    public void setPos(int col, int row)
+    {
+        colPos = col;
+        rowPos = row;
+    }
+
+    public int getRowPos()
+    {
+        return rowPos;
+    }
+    public int getColPos()
+    {
+        return colPos;
     }
 }
