@@ -35,7 +35,7 @@ public class GameBoard : MonoBehaviour
                 GameObject newCell = Instantiate(cell, position , Quaternion.identity);
                 newCell.AddComponent<Cell>();   
                // stateOfBoard[i, j] = newCell;
-                newCell.GetComponent<Cell>().setState(CellState.Dead);
+                newCell.GetComponent<Cell>().setState(CellState.Alive);
                 newCell.gameObject.name = "cell" + i+j;
 
             }
