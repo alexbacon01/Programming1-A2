@@ -11,6 +11,7 @@ public class GameBoard : MonoBehaviour
     public GameObject cell;
     public GameObject[,] stateOfBoard;
     public float spacing = 1.5f;
+ 
     void Start()
     {
         drawBoard();
@@ -32,10 +33,14 @@ public class GameBoard : MonoBehaviour
             {
                 position = new Vector3(i-boardWidth/2, j-boardHeight/2, 0) * spacing;
                 GameObject newCell = Instantiate(cell, position , Quaternion.identity);
+                newCell.AddComponent<Cell>();   
+               // stateOfBoard[i, j] = newCell;
+                newCell.GetComponent<Cell>().setState(CellState.Dead);
                 newCell.gameObject.name = "cell" + i+j;
 
             }
         }
+
 
 
     }
@@ -43,5 +48,10 @@ public class GameBoard : MonoBehaviour
     {
         Vector2 position = new Vector2(0, 0);
         transform.position = position;
+    }
+
+    private void checkRules(GameObject cell)
+    {
+
     }
 }
