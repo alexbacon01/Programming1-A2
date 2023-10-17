@@ -2,10 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum CellState
+{
+    Alive,
+    Dead
+};
 public class Cell : MonoBehaviour
 {
+    private CellState state = CellState.Dead; 
     // Start is called before the first frame update
-    public bool isAlive = false;
+    
     void Start()
     {
         
@@ -19,7 +25,7 @@ public class Cell : MonoBehaviour
 
     private void changeColour()
     {
-        if (isAlive)
+        if (state == CellState.Alive)
         {
             gameObject.GetComponent<SpriteRenderer>().color = Color.black;
         }
@@ -27,5 +33,10 @@ public class Cell : MonoBehaviour
         {
             gameObject.GetComponent<SpriteRenderer>().color = Color.white;
         }
+    }
+
+    public void setAlive()
+    {
+        state = CellState.Alive;
     }
 }
