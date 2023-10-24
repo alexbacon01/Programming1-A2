@@ -48,9 +48,9 @@ public class Cell : MonoBehaviour
         return state;
     }
 
-    public void setNeighbours(GameObject[] neighbours)
+    public void setNeighbours(GameObject[] cellNeighbours)
     {
-
+        neighbours = cellNeighbours;
     }
     public GameObject[] getNeighbours()
     {

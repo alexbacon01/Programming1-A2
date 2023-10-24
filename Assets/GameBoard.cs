@@ -41,10 +41,11 @@ public class GameBoard : MonoBehaviour
                 newCell.GetComponent<Cell>().setPos(i, j);
                 newCell.GetComponent<Cell>().setNeighbours(findNeighbours(newCell));
             }
+
         }
     for(int i=0; i<8; i++)
         {
-            Debug.Log(i + findNeighbours(stateOfBoard[19, 0])[i].name);
+           // Debug.Log(i + findNeighbours(stateOfBoard[19, 0])[i].name);
 
         }
        // Debug.Log(stateOfBoard[3, 4]);
