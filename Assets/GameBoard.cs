@@ -39,12 +39,12 @@ public class GameBoard : MonoBehaviour
                 GameObject newCell = makeNewCell(numOfCells, position);
                 stateOfBoard[i, j] = newCell;
                 newCell.GetComponent<Cell>().setPos(i, j);
-                //newCell.GetComponent<Cell>().setNeighbours(findNeighbours(newCell));
+                newCell.GetComponent<Cell>().setNeighbours(findNeighbours(newCell));
             }
         }
     for(int i=0; i<8; i++)
         {
-            Debug.Log(i + findNeighbours(stateOfBoard[0, 0])[i].name);
+            Debug.Log(i + findNeighbours(stateOfBoard[19, 0])[i].name);
 
         }
        // Debug.Log(stateOfBoard[3, 4]);
@@ -170,28 +170,51 @@ public class GameBoard : MonoBehaviour
 
         }
 
-        if(rowEdgeCase && colEdgeCase)
+        if (rowEdgeCase && colEdgeCase)
         {
-            if(colPos == 0 && rowPos == 0)
+            if (colPos == 0 && rowPos == 0)
             {
                 neighbours[0] = stateOfBoard[colPos, boardHeight - 1]; // cell under [0] wraps to top of board
                 neighbours[1] = stateOfBoard[colPos, rowPos + 1]; //cell above [1]
                 neighbours[2] = stateOfBoard[boardWidth - 1, rowPos]; // cell left [2] wraps around to other side of board //YES
                 neighbours[3] = stateOfBoard[colPos + 1, rowPos]; //cell on right [3] YES
-                neighbours[4] = stateOfBoard[boardWidth-1, boardHeight - 1]; //cell left and down [4]
+                neighbours[4] = stateOfBoard[boardWidth - 1, boardHeight - 1]; //cell left and down [4]
                 neighbours[5] = stateOfBoard[colPos + 1, rowPos + 1]; //cell right and up [5]
-                neighbours[6] = stateOfBoard[boardWidth-1, rowPos + 1]; //cell left and up [6]
+                neighbours[6] = stateOfBoard[boardWidth - 1, rowPos + 1]; //cell left and up [6]
                 neighbours[7] = stateOfBoard[colPos + 1, boardHeight - 1]; //cell right and down [7]
-            } else if(colPos ==  boardWidth- 1 && rowPos == boardHeight - 1)
+            }
+            else if (colPos == boardWidth - 1 && rowPos == boardHeight - 1)
             {
                 neighbours[0] = stateOfBoard[colPos, rowPos - 1]; // cell under [0] YES
                 neighbours[1] = stateOfBoard[colPos, 0]; // cell above[1] wraps around to bottom of the board
                 neighbours[2] = stateOfBoard[colPos - 1, rowPos]; //cell on left [2]
-                neighbours[3] =  stateOfBoard[0, rowPos]; //cell on right [3]
-                neighbours[4] = stateOfBoard[colPos-1, rowPos - 1]; //cell left and down [4]
+                neighbours[3] = stateOfBoard[0, rowPos]; //cell on right [3]
+                neighbours[4] = stateOfBoard[colPos - 1, rowPos - 1]; //cell left and down [4]
                 neighbours[5] = stateOfBoard[0, 0]; //cell right and up [5]
-                neighbours[6] = stateOfBoard[colPos-1, 0]; //cell left and up [6]
+                neighbours[6] = stateOfBoard[colPos - 1, 0]; //cell left and up [6]
                 neighbours[7] = stateOfBoard[0, rowPos - 1]; //cell right and down [7]
+            }
+            else if (colPos == 0 && rowPos == boardHeight - 1)
+            {
+                neighbours[0] = stateOfBoard[colPos, rowPos - 1]; // cell under [0] YES
+                neighbours[1] = stateOfBoard[colPos, 0]; // cell above[1] wraps around to bottom of the board
+                neighbours[2] = stateOfBoard[boardWidth - 1, rowPos]; // cell left [2] wraps around to other side of board //YES
+                neighbours[3] = stateOfBoard[colPos + 1, rowPos]; //cell on right [3] YES
+                neighbours[4] = stateOfBoard[boardWidth - 1, rowPos - 1]; //cell left and down [4] wraps to other side //YES
+                neighbours[5] = stateOfBoard[colPos + 1, 0]; //cell right and up [5]
+                neighbours[6] = stateOfBoard[boardWidth - 1, 0]; //cell left and up [6] wraps to other side
+                neighbours[7] = stateOfBoard[colPos + 1, rowPos - 1]; //cell right and down [7]
+            }
+            else if (colPos == boardWidth - 1 && rowPos == 0)
+            {
+                neighbours[0] = stateOfBoard[colPos, boardHeight - 1]; // cell under [0] wraps to top of board
+                neighbours[1] = stateOfBoard[colPos, rowPos + 1]; //cell above [1]
+                neighbours[2] = stateOfBoard[colPos - 1, rowPos]; //cell on left [2]
+                neighbours[3] = stateOfBoard[0, rowPos]; //cell on right [3] YES
+                neighbours[4] = stateOfBoard[colPos - 1, boardHeight-1]; //cell left and down [4]
+                neighbours[5] = stateOfBoard[0, rowPos + 1]; //cell right and up [5]
+                neighbours[6] = stateOfBoard[colPos - 1, rowPos + 1]; //cell left and up [6]
+                neighbours[7] = stateOfBoard[0, boardHeight-1]; //cell right and down [7]
             }
         }
         
