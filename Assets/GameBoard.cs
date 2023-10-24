@@ -44,14 +44,14 @@ public class GameBoard : MonoBehaviour
         }
     for(int i=0; i<8; i++)
         {
-            Debug.Log(findNeighbours(stateOfBoard[3, 0])[i].name);
+            Debug.Log(i + findNeighbours(stateOfBoard[0, 0])[i].name);
 
         }
        // Debug.Log(stateOfBoard[3, 4]);
     }
     private void drawBackground()
     {
-        Vector2 position = new Vector2(0, 0);
+        Vector2 position = new Vector2(19,3);
         transform.position = position;
     }
 
@@ -107,23 +107,28 @@ public class GameBoard : MonoBehaviour
             rowEdgeCase = true;
         }
 
-        if (colEdgeCase && colPos == 0)
+        if (colEdgeCase && colPos == 0 && !rowEdgeCase)
         {
             neighbours[2] = stateOfBoard[boardWidth - 1, rowPos]; // cell left [2] wraps around to other side of board //YES
-            neighbours[3] = neighbours[3] = stateOfBoard[colPos + 1, rowPos]; //cell on right [3] YES
+            neighbours[3] = stateOfBoard[colPos + 1, rowPos]; //cell on right [3] YES
             neighbours[4] = stateOfBoard[boardWidth - 1, rowPos - 1]; //cell left and down [4] wraps to other side //YES
             neighbours[5] = stateOfBoard[colPos + 1, rowPos + 1]; //cell right and up [5]
             neighbours[6] = stateOfBoard[boardWidth - 1, rowPos + 1]; //cell left and up [6] wraps to other side
             neighbours[7] = stateOfBoard[colPos + 1, rowPos - 1]; //cell right and down [7]
         }
-        else if (colEdgeCase && colPos == boardWidth - 1)
+        else if (colEdgeCase && colPos == boardWidth - 1 && !rowEdgeCase)
         {
-            neighbours[2] = stateOfBoard[0, rowPos]; // cell left [2] wraps around to other side of board
-            neighbours[4] = stateOfBoard[0, rowPos - 1]; //cell left and down [4] wraps to other side
-            neighbours[6] = stateOfBoard[0, rowPos + 1]; //cell left and up [6] wraps to other side
+
+            neighbours[2] = stateOfBoard[colPos - 1, rowPos]; //cell on left [2]
+            neighbours[3] = stateOfBoard[0, rowPos]; //cell on right [3] YES
+            neighbours[4] = stateOfBoard[colPos - 1, rowPos - 1]; //cell left and down [4]
+            neighbours[5] = stateOfBoard[0, rowPos + 1]; //cell right and up [5]
+            neighbours[6] = stateOfBoard[colPos - 1, rowPos + 1]; //cell left and up [6]
+            neighbours[7] = stateOfBoard[0, rowPos - 1]; //cell right and down [7]
+
         }
 
-        if (rowEdgeCase && rowPos == 0)
+        if (rowEdgeCase && rowPos == 0 && !colEdgeCase)
         {
             neighbours[0] = stateOfBoard[colPos, boardHeight - 1]; // cell under [0] wraps to top of board
             neighbours[1] = stateOfBoard[colPos, rowPos + 1]; //cell above [1]
@@ -134,9 +139,14 @@ public class GameBoard : MonoBehaviour
 
 
         }
-        else if (rowEdgeCase && rowPos == boardHeight - 1)
+        else if (rowEdgeCase && rowPos == boardHeight - 1 && !colEdgeCase)
         {
+            neighbours[0] = stateOfBoard[colPos, rowPos - 1]; // cell under [0]
             neighbours[1] = stateOfBoard[colPos, 0]; // cell above[1] wraps around to bottom of the board
+            neighbours[4] = stateOfBoard[colPos - 1, rowPos - 1]; //cell left and down [4]
+            neighbours[5] = stateOfBoard[colPos + 1, 0]; //cell right and up [5]
+            neighbours[6] = stateOfBoard[colPos - 1, 0]; //cell left and up [6]
+            neighbours[7] = stateOfBoard[colPos + 1, rowPos - 1]; //cell right and down [7]
         }
 
         if (!colEdgeCase)
@@ -147,8 +157,9 @@ public class GameBoard : MonoBehaviour
             if (!rowEdgeCase)
             {
                 neighbours[4] = stateOfBoard[colPos - 1, rowPos - 1]; //cell left and down [4] 
+                neighbours[5] = stateOfBoard[colPos + 1, rowPos + 1]; //cell right and up [5]
                 neighbours[6] = stateOfBoard[colPos - 1, rowPos + 1]; //cell left and up [6]
-                neighbours[7] = stateOfBoard[colPos + 1, boardHeight - 1]; //cell right and down [7]
+                neighbours[7] = stateOfBoard[colPos + 1, rowPos - 1]; //cell right and down [7]
             }
         }
 
@@ -156,6 +167,32 @@ public class GameBoard : MonoBehaviour
         {
             neighbours[0] = stateOfBoard[colPos, rowPos - 1]; // cell under [0] YES
             neighbours[1] = stateOfBoard[colPos, rowPos + 1]; //cell above [1] YES
+
+        }
+
+        if(rowEdgeCase && colEdgeCase)
+        {
+            if(colPos == 0 && rowPos == 0)
+            {
+                neighbours[0] = stateOfBoard[colPos, boardHeight - 1]; // cell under [0] wraps to top of board
+                neighbours[1] = stateOfBoard[colPos, rowPos + 1]; //cell above [1]
+                neighbours[2] = stateOfBoard[boardWidth - 1, rowPos]; // cell left [2] wraps around to other side of board //YES
+                neighbours[3] = stateOfBoard[colPos + 1, rowPos]; //cell on right [3] YES
+                neighbours[4] = stateOfBoard[boardWidth-1, boardHeight - 1]; //cell left and down [4]
+                neighbours[5] = stateOfBoard[colPos + 1, rowPos + 1]; //cell right and up [5]
+                neighbours[6] = stateOfBoard[boardWidth-1, rowPos + 1]; //cell left and up [6]
+                neighbours[7] = stateOfBoard[colPos + 1, boardHeight - 1]; //cell right and down [7]
+            } else if(colPos ==  boardWidth- 1 && rowPos == boardHeight - 1)
+            {
+                neighbours[0] = stateOfBoard[colPos, rowPos - 1]; // cell under [0] YES
+                neighbours[1] = stateOfBoard[colPos, 0]; // cell above[1] wraps around to bottom of the board
+                neighbours[2] = stateOfBoard[colPos - 1, rowPos]; //cell on left [2]
+                neighbours[3] =  stateOfBoard[0, rowPos]; //cell on right [3]
+                neighbours[4] = stateOfBoard[colPos-1, rowPos - 1]; //cell left and down [4]
+                neighbours[5] = stateOfBoard[0, 0]; //cell right and up [5]
+                neighbours[6] = stateOfBoard[colPos-1, 0]; //cell left and up [6]
+                neighbours[7] = stateOfBoard[0, rowPos - 1]; //cell right and down [7]
+            }
         }
         
         return neighbours;
