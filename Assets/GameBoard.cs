@@ -1,9 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+public enum Rules
+{
+    Underpopulation,
+    NextGen,
+    OverPopulation,
+    Reproduction
+};
 public class GameBoard : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -12,6 +20,7 @@ public class GameBoard : MonoBehaviour
     public GameObject cell;
     public GameObject[,] stateOfBoard;
     public float spacing = 1.5f;
+    private Rules activeRule;
 
     void Start()
     {
@@ -23,6 +32,7 @@ public class GameBoard : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
     }
 
     private void drawBoard()
@@ -74,8 +84,30 @@ public class GameBoard : MonoBehaviour
         return newCell;
     }
 
-    private void checkRules()
+    private void checkRules(GameObject cell)
     {
+        int aliveNeighbours = cell.GetComponent<Cell>().getAliveNeighbours();
+
+        if(cell.GetComponent<Cell>().getState() == CellState.Alive)
+        {
+            if (aliveNeighbours < 2)
+            {
+                activeRule = Rules.Underpopulation;
+            }
+            else if (aliveNeighbours > 1 && aliveNeighbours < 4)
+            {
+                activeRule = Rules.NextGen;
+            } else if (aliveNeighbours > 3)
+            {
+                activeRule = Rules.OverPopulation;
+            }
+        } else
+        {
+            if(aliveNeighbours == 3)
+            {
+                activeRule = Rules.Reproduction;
+            }
+        }
 
     }
     private GameObject[] findNeighbours(GameObject cell)
