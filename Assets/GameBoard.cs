@@ -33,7 +33,7 @@ public class GameBoard : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        mouseClicked();
+        changeState();
     }
 
     private void drawBoard()
@@ -52,11 +52,11 @@ public class GameBoard : MonoBehaviour
                 newCell.GetComponent<Cell>().setPos(i, j);
             }
 
-        } 
-    for(int i=0; i<boardWidth; i++) //loop to go and find neighbours had to be seprate so that all the neighbours are also initialized.
+        }
+        for (int i = 0; i < boardWidth; i++) //loop to go and find neighbours had to be seprate so that all the neighbours are also initialized.
         {
             //Debug.Log(i + findNeighbours(stateOfBoard[19, 0])[i].name);
-            for(int j =0;j<boardHeight; j++)
+            for (int j = 0; j < boardHeight; j++)
             {
                 GameObject currentCell = stateOfBoard[i, j];
                 currentCell.GetComponent<Cell>().setNeighbours(findNeighbours(currentCell));
@@ -70,7 +70,7 @@ public class GameBoard : MonoBehaviour
     }
     private void drawBackground()
     {
-        Vector2 position = new Vector2(19,3);
+        Vector2 position = new Vector2(19, 3);
         transform.position = position;
     }
 
@@ -89,7 +89,7 @@ public class GameBoard : MonoBehaviour
     {
         int aliveNeighbours = cell.GetComponent<Cell>().getAliveNeighbours();
 
-        if(cell.GetComponent<Cell>().getState() == CellState.Alive)
+        if (cell.GetComponent<Cell>().getState() == CellState.Alive)
         {
             if (aliveNeighbours < 2)
             {
@@ -98,13 +98,15 @@ public class GameBoard : MonoBehaviour
             else if (aliveNeighbours > 1 && aliveNeighbours < 4)
             {
                 activeRule = Rules.NextGen;
-            } else if (aliveNeighbours > 3)
+            }
+            else if (aliveNeighbours > 3)
             {
                 activeRule = Rules.OverPopulation;
             }
-        } else
+        }
+        else
         {
-            if(aliveNeighbours == 3)
+            if (aliveNeighbours == 3)
             {
                 activeRule = Rules.Reproduction;
             }
@@ -142,11 +144,11 @@ public class GameBoard : MonoBehaviour
         */
 
         //set Edge Cases
-        if (colPos == 0 || colPos == boardWidth-1)
+        if (colPos == 0 || colPos == boardWidth - 1)
         {
             colEdgeCase = true;
         }
-        if(rowPos == 0 || rowPos == boardHeight - 1)
+        if (rowPos == 0 || rowPos == boardHeight - 1)
         {
             rowEdgeCase = true;
         }
@@ -176,7 +178,7 @@ public class GameBoard : MonoBehaviour
         {
             neighbours[0] = stateOfBoard[colPos, boardHeight - 1]; // cell under [0] wraps to top of board
             neighbours[1] = stateOfBoard[colPos, rowPos + 1]; //cell above [1]
-            neighbours[4] = stateOfBoard[colPos - 1, boardHeight-1]; //cell left and down [4]
+            neighbours[4] = stateOfBoard[colPos - 1, boardHeight - 1]; //cell left and down [4]
             neighbours[5] = stateOfBoard[colPos + 1, rowPos + 1]; //cell right and up [5]
             neighbours[6] = stateOfBoard[colPos - 1, rowPos + 1]; //cell left and up [6]
             neighbours[7] = stateOfBoard[colPos + 1, boardHeight - 1]; //cell right and down [7]
@@ -255,28 +257,49 @@ public class GameBoard : MonoBehaviour
                 neighbours[1] = stateOfBoard[colPos, rowPos + 1]; //cell above [1]
                 neighbours[2] = stateOfBoard[colPos - 1, rowPos]; //cell on left [2]
                 neighbours[3] = stateOfBoard[0, rowPos]; //cell on right [3] YES
-                neighbours[4] = stateOfBoard[colPos - 1, boardHeight-1]; //cell left and down [4]
+                neighbours[4] = stateOfBoard[colPos - 1, boardHeight - 1]; //cell left and down [4]
                 neighbours[5] = stateOfBoard[0, rowPos + 1]; //cell right and up [5]
                 neighbours[6] = stateOfBoard[colPos - 1, rowPos + 1]; //cell left and up [6]
-                neighbours[7] = stateOfBoard[0, boardHeight-1]; //cell right and down [7]
+                neighbours[7] = stateOfBoard[0, boardHeight - 1]; //cell right and down [7]
             }
         }
-        
+
         return neighbours;
-        }
-    
-        private void mouseClicked()
+    }
+
+    private GameObject mouseClicked()
     {
         if (Input.GetMouseButtonDown(0))
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
-            if(hit.collider != null)
+            if (hit.collider != null)
             {
-                Debug.Log(hit.collider.name);
+                return hit.collider.gameObject;
+
             }
         }
+        return null;
     }
-    
+
+    private void changeState()
+    {
+
+        if (mouseClicked() != null)
+        {
+            CellState currentState = mouseClicked().GetComponent<Cell>().getState();
+            CellState newState;
+            if (currentState == CellState.Alive)
+            {
+                newState = CellState.Dead;
+            }
+            else
+            {
+                newState = CellState.Alive;
+            }
+            mouseClicked().GetComponent<Cell>().setState(newState);
+        }
+
     }
+}
 
