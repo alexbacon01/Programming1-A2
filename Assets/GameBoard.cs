@@ -40,7 +40,6 @@ public class GameBoard : MonoBehaviour
         {
             changeRuleState();
         }
-        
     }
 
     private void drawBoard()
@@ -82,7 +81,7 @@ public class GameBoard : MonoBehaviour
     private GameObject makeNewCell(int numOfCells, Vector2 pos)
     {
         GameObject newCell = Instantiate(cell, pos, Quaternion.identity);
-        newCell.GetComponent<Cell>().setState(CellState.Alive);
+        newCell.GetComponent<Cell>().setState(CellState.Dead);
         newCell.gameObject.name = "cell" + numOfCells;
         return newCell;
     }
@@ -308,20 +307,33 @@ public class GameBoard : MonoBehaviour
             }
 
             mouseClicked().GetComponent<Cell>().setState(newState);
-
+            if(gameRunning == false)
+            {
+                recountNeighbours();
+            }
         }
 
 
     }
+    private void recountNeighbours()
+    {
+        for (int i = 0; i < boardWidth; i++)
+        {
 
+            for (int j = 0; j < boardHeight; j++)
+            {
+                stateOfBoard[i, j].GetComponent<Cell>().setAliveNeighbours();
+            }
+        }
+    }
     private void changeRuleState()
     {
         Rules currentRule = Rules.NoChange;
 
 
-        for (int i = 0; i < boardWidth - 1; i++)
+        for (int i = 0; i < boardWidth; i++)
         {
-            for (int j = 0; j < boardHeight - 1; j++)
+            for (int j = 0; j < boardHeight; j++)
             {
                 currentRule = checkRules(stateOfBoard[i, j]);
 
@@ -342,7 +354,6 @@ public class GameBoard : MonoBehaviour
                 {
                     stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Alive);
                 }
-                stateOfBoard[i, j].GetComponent<Cell>().setAliveNeighbours();
             }
 
         }
