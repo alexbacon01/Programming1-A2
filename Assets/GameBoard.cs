@@ -40,7 +40,7 @@ public class GameBoard : MonoBehaviour
         {
             changeRuleState();
         }
-
+        
     }
 
     private void drawBoard()
@@ -68,12 +68,7 @@ public class GameBoard : MonoBehaviour
                 GameObject currentCell = stateOfBoard[i, j];
                 currentCell.GetComponent<Cell>().setNeighbours(findNeighbours(currentCell));
             }
-
-
         }
-
-
-        Debug.Log(stateOfBoard[3, 4].GetComponent<Cell>().getAliveNeighbours());
     }
     private void drawBackground()
     {
@@ -87,7 +82,7 @@ public class GameBoard : MonoBehaviour
     private GameObject makeNewCell(int numOfCells, Vector2 pos)
     {
         GameObject newCell = Instantiate(cell, pos, Quaternion.identity);
-        newCell.GetComponent<Cell>().setState(CellState.Dead);
+        newCell.GetComponent<Cell>().setState(CellState.Alive);
         newCell.gameObject.name = "cell" + numOfCells;
         return newCell;
     }
@@ -313,6 +308,7 @@ public class GameBoard : MonoBehaviour
             }
 
             mouseClicked().GetComponent<Cell>().setState(newState);
+
         }
 
 
@@ -332,6 +328,7 @@ public class GameBoard : MonoBehaviour
                 if (currentRule == Rules.Underpopulation)
                 {
                     stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Dead);
+
                 }
                 else if (currentRule == Rules.NextGen)
                 {
@@ -345,9 +342,12 @@ public class GameBoard : MonoBehaviour
                 {
                     stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Alive);
                 }
+                stateOfBoard[i, j].GetComponent<Cell>().setAliveNeighbours();
             }
+
         }
-       // Debug.Log(currentRule.ToString());
+        // Debug.Log(currentRule.ToString());
+
     }
 }
 
