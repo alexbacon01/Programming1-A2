@@ -39,13 +39,18 @@ public class GameBoard : MonoBehaviour
                 GameObject newCell = makeNewCell(numOfCells, position);
                 stateOfBoard[i, j] = newCell;
                 newCell.GetComponent<Cell>().setPos(i, j);
-                newCell.GetComponent<Cell>().setNeighbours(findNeighbours(newCell));
             }
 
-        }
-    for(int i=0; i<8; i++)
+        } 
+    for(int i=0; i<boardWidth; i++) //loop to go and find neighbours
         {
-           // Debug.Log(i + findNeighbours(stateOfBoard[19, 0])[i].name);
+            //Debug.Log(i + findNeighbours(stateOfBoard[19, 0])[i].name);
+            for(int j =0;j<boardHeight; j++)
+            {
+                GameObject currentCell = stateOfBoard[i, j];
+                currentCell.GetComponent<Cell>().setNeighbours(findNeighbours(currentCell));
+            }
+
 
         }
        // Debug.Log(stateOfBoard[3, 4]);
