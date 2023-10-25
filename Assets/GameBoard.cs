@@ -10,7 +10,8 @@ public enum Rules
     Underpopulation,
     NextGen,
     OverPopulation,
-    Reproduction
+    Reproduction,
+    NoChange
 };
 public class GameBoard : MonoBehaviour
 {
@@ -20,7 +21,8 @@ public class GameBoard : MonoBehaviour
     public GameObject cell;
     public GameObject[,] stateOfBoard;
     public float spacing = 1.5f;
-    private Rules activeRule;
+    public bool gameRunning = false;
+
 
     void Start()
     {
@@ -34,6 +36,11 @@ public class GameBoard : MonoBehaviour
     void Update()
     {
         changeState();
+        if(gameRunning)
+        {
+            changeRuleState();
+        }
+
     }
 
     private void drawBoard()
@@ -85,9 +92,10 @@ public class GameBoard : MonoBehaviour
         return newCell;
     }
 
-    private void checkRules(GameObject cell)
+    private Rules checkRules(GameObject cell)
     {
         int aliveNeighbours = cell.GetComponent<Cell>().getAliveNeighbours();
+        Rules activeRule = Rules.NoChange;
 
         if (cell.GetComponent<Cell>().getState() == CellState.Alive)
         {
@@ -95,11 +103,11 @@ public class GameBoard : MonoBehaviour
             {
                 activeRule = Rules.Underpopulation;
             }
-            else if (aliveNeighbours > 1 && aliveNeighbours < 4)
+            if (aliveNeighbours > 1 && aliveNeighbours < 4)
             {
                 activeRule = Rules.NextGen;
             }
-            else if (aliveNeighbours > 3)
+            if (aliveNeighbours > 3)
             {
                 activeRule = Rules.OverPopulation;
             }
@@ -111,6 +119,8 @@ public class GameBoard : MonoBehaviour
                 activeRule = Rules.Reproduction;
             }
         }
+        Debug.Log(activeRule.ToString());
+        return activeRule;
 
     }
     private GameObject[] findNeighbours(GameObject cell)
@@ -285,10 +295,14 @@ public class GameBoard : MonoBehaviour
     private void changeState()
     {
 
+        CellState newState;
+
+
+
+
         if (mouseClicked() != null)
         {
             CellState currentState = mouseClicked().GetComponent<Cell>().getState();
-            CellState newState;
             if (currentState == CellState.Alive)
             {
                 newState = CellState.Dead;
@@ -297,9 +311,43 @@ public class GameBoard : MonoBehaviour
             {
                 newState = CellState.Alive;
             }
+
             mouseClicked().GetComponent<Cell>().setState(newState);
         }
 
+
+    }
+
+    private void changeRuleState()
+    {
+        Rules currentRule = Rules.NoChange;
+
+
+        for (int i = 0; i < boardWidth - 1; i++)
+        {
+            for (int j = 0; j < boardHeight - 1; j++)
+            {
+                currentRule = checkRules(stateOfBoard[i, j]);
+
+                if (currentRule == Rules.Underpopulation)
+                {
+                    stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Dead);
+                }
+                else if (currentRule == Rules.NextGen)
+                {
+                    stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Alive);
+                }
+                else if (currentRule == Rules.OverPopulation)
+                {
+                    stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Dead);
+                }
+                else if (currentRule == Rules.Reproduction)
+                {
+                    stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Alive);
+                }
+            }
+        }
+       // Debug.Log(currentRule.ToString());
     }
 }
 
