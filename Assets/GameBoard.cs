@@ -40,6 +40,8 @@ public class GameBoard : MonoBehaviour
         {
             changeRuleState();
         }
+
+
     }
 
     private void drawBoard()
@@ -358,7 +360,7 @@ public class GameBoard : MonoBehaviour
 
         }
         // Debug.Log(currentRule.ToString());
-
+        recountNeighbours();
     }
 }
 
