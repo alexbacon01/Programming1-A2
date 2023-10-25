@@ -13,6 +13,7 @@ public class Cell : MonoBehaviour
     private GameObject[] neighbours;
     private int colPos;
     private int rowPos;
+    private int aliveNeighbours;
     // Start is called before the first frame update
     
     void Start()
@@ -24,6 +25,8 @@ public class Cell : MonoBehaviour
     void Update()
     {
         changeColour();
+        setAliveNeighbours();
+
     }
 
     private void changeColour()
@@ -69,5 +72,22 @@ public class Cell : MonoBehaviour
     public int getColPos()
     {
         return colPos;
+    }
+
+    public void setAliveNeighbours()
+    {
+        int numOfAliveNeighbours = 0;
+        for (int i = 0; i < neighbours.Length; i++)
+        {
+            if (neighbours[i].GetComponent<Cell>().getState() == CellState.Alive)
+            {
+                numOfAliveNeighbours++;
+            }
+        }
+    }
+
+    public int getAliveNeighbours()
+    {
+        return aliveNeighbours;
     }
 }

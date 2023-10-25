@@ -42,7 +42,7 @@ public class GameBoard : MonoBehaviour
             }
 
         } 
-    for(int i=0; i<boardWidth; i++) //loop to go and find neighbours
+    for(int i=0; i<boardWidth; i++) //loop to go and find neighbours had to be seprate so that all the neighbours are also initialized.
         {
             //Debug.Log(i + findNeighbours(stateOfBoard[19, 0])[i].name);
             for(int j =0;j<boardHeight; j++)
@@ -53,7 +53,9 @@ public class GameBoard : MonoBehaviour
 
 
         }
-       // Debug.Log(stateOfBoard[3, 4]);
+
+
+        Debug.Log(stateOfBoard[3, 4].GetComponent<Cell>().getAliveNeighbours());
     }
     private void drawBackground()
     {
@@ -61,10 +63,8 @@ public class GameBoard : MonoBehaviour
         transform.position = position;
     }
 
-    private void checkRules(GameObject cell)
-    {
 
-    }
+
 
     private GameObject makeNewCell(int numOfCells, Vector2 pos)
     {
@@ -72,6 +72,11 @@ public class GameBoard : MonoBehaviour
         newCell.GetComponent<Cell>().setState(CellState.Dead);
         newCell.gameObject.name = "cell" + numOfCells;
         return newCell;
+    }
+
+    private void checkRules()
+    {
+
     }
     private GameObject[] findNeighbours(GameObject cell)
     {
