@@ -107,6 +107,24 @@ public class GameBoard : MonoBehaviour
         setStamp();
     }
 
+    public void randomSeed()
+    {
+        int random;
+        for(int i =0; i < boardWidth; i++)
+        {
+            for(int j =0; j< boardHeight; j++) {
+                random = Random.Range(1, 101);
+                if (random < 85)
+                {
+                    stateOfBoard[i,j].GetComponent<Cell>().setState(CellState.Dead); 
+                } else
+                {
+                    stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Alive);
+                }
+            }
+        }
+    }
+
     public void setSpaceship()
     {
         stampType = Stamps.Spaceship;
