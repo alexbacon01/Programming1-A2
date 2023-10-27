@@ -17,17 +17,21 @@ public class GameBoard : MonoBehaviour
 {
     // Start is called before the first frame update
     public int boardWidth = 20;
-    public int boardHeight = 10;
+    private int boardHeight;
     public GameObject cell;
     public GameObject[,] stateOfBoard;
     public float spacing = 1.5f;
     public bool gameRunning = false;
-
+    public GameObject mainCamera;
+    private float cellSize;
 
     void Start()
     {
+        boardHeight = boardWidth / 2;
         UnityEngine.Cursor.visible = true;
         stateOfBoard = new GameObject[boardWidth, boardHeight];
+        cellSize = ((mainCamera.GetComponent<Camera>().orthographicSize) / boardWidth) * 2;
+        Debug.Log(cellSize);
         drawBoard();
         drawBackground();
     }
@@ -44,11 +48,17 @@ public class GameBoard : MonoBehaviour
 
     }
 
+    private void lineWithCamera()
+    {
+        Vector3 cameraPos = mainCamera.GetComponent<Transform>().position;
+        mainCamera.GetComponent<Transform>().position = cameraPos;
+    }
+
     private void drawBoard()
     {
         Vector2 position;
         int numOfCells = 0; //used for naming the cells
-
+        float spacing = cellSize * 1.2f;
         for (int i = 0; i < boardWidth; i++)
         {
             for (int j = 0; j < boardHeight; j++)
@@ -82,8 +92,10 @@ public class GameBoard : MonoBehaviour
 
     private GameObject makeNewCell(int numOfCells, Vector2 pos)
     {
+
         GameObject newCell = Instantiate(cell, pos, Quaternion.identity);
         newCell.GetComponent<Cell>().setState(CellState.Dead);
+        newCell.GetComponent<Transform>().localScale = new Vector3(cellSize, cellSize, cellSize);
         newCell.gameObject.name = "cell" + numOfCells;
         return newCell;
     }
