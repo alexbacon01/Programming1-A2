@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Timeline;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
 
 public enum Rules
@@ -16,6 +18,7 @@ public enum Rules
 public class GameBoard : MonoBehaviour
 {
     // Start is called before the first frame update
+    [Range(10, 50)]
     public int boardWidth = 20;
     private int boardHeight;
     public GameObject cell;
@@ -25,9 +28,16 @@ public class GameBoard : MonoBehaviour
     public GameObject mainCamera;
     private float cellSize;
     private int generation;
+    public Text generationText;
+    private bool stamp = false;
+    public UnityEngine.UI.Slider FPSSlider;
+    [Range(1, 4)]
+    public int frameRate = 1;
+
 
     void Start()
     {
+        Application.targetFrameRate = frameRate;
         boardHeight = boardWidth / 2;
         UnityEngine.Cursor.visible = true;
         stateOfBoard = new GameObject[boardWidth, boardHeight];
@@ -40,7 +50,9 @@ public class GameBoard : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Application.targetFrameRate = frameRate;
         changeState();
+        generationText.text = "Current Generation: " + generation.ToString();
         if(gameRunning)
         {
             nextGen();
@@ -48,8 +60,15 @@ public class GameBoard : MonoBehaviour
 
 
     }
+
+    public void changeFPS()
+    {
+        frameRate = (int)FPSSlider.value;
+        Debug.Log(frameRate);
+    }
     public void nextGen()
     {
+   
         changeRuleState();
         generation++;
     }
