@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 
 public enum CellState
@@ -14,6 +15,7 @@ public class Cell : MonoBehaviour
     private int aliveNeighbours;
     private int numCalled = 0;
 
+
     void Start()
     {
     }
@@ -22,6 +24,7 @@ public class Cell : MonoBehaviour
     {
         changeColour();
     }
+
 
     private void changeColour()
     {
@@ -33,6 +36,7 @@ public class Cell : MonoBehaviour
         {
             gameObject.GetComponent<SpriteRenderer>().color = Color.white;
         }
+
     }
 
     public void setState(CellState newState)

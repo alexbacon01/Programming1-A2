@@ -1,3 +1,4 @@
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -38,7 +39,7 @@ public class GameBoard : MonoBehaviour
     private int generation;
     public Text generationText;
     private bool stamp = false;
-    Stamps stampShape;
+    private Stamps stampType;
 
 
     void Start()
@@ -65,6 +66,11 @@ public class GameBoard : MonoBehaviour
             nextGen(); //changes the rule state and updates the generation count
             Application.targetFrameRate = frameRate; //update the target frame rate to match the slider framerate
         }
+        if(stamp) 
+        {
+            stampPreset();
+        }
+
 
     }
 
@@ -88,6 +94,23 @@ public class GameBoard : MonoBehaviour
     {
         changeRuleState();
         generation++;
+    }
+
+    public void setStamp()
+    {
+        stamp = !stamp;
+    }
+
+    public void setOscillator()
+    {
+        stampType = Stamps.Oscillator;
+        setStamp();
+    }
+
+    public void setSpaceship()
+    {
+        stampType = Stamps.Spaceship;
+        setStamp() ;
     }
 
     /* public method for clearing the game on the clear button, destroys old board, resets generation back to 0, and draws a new board */
@@ -196,16 +219,30 @@ public class GameBoard : MonoBehaviour
     /*a method to stamp a preset onto the board*/
     private void stampPreset()
     {
-        if (stamp)
+        GameObject clickedCell = mouseClicked();
+        if(clickedCell != null)
         {
-            if(stampShape == Stamps.Oscillator)
-            {
+            GameObject[] neighbours = clickedCell.GetComponent<Cell>().getNeighbours();
 
-            } else if (stampShape == Stamps.Spaceship)
+            if (stampType == Stamps.Oscillator)
             {
+                //makes the blinker oscillator
+                clickedCell.GetComponent<Cell>().setState(CellState.Alive);
+                neighbours[2].GetComponent<Cell>().setState(CellState.Alive);
+                neighbours[3].GetComponent<Cell>().setState(CellState.Alive);
 
             }
+            else if (stampType == Stamps.Spaceship)
+            {
+                clickedCell.GetComponent<Cell>().setState(CellState.Alive);
+                neighbours[2].GetComponent<Cell>().setState(CellState.Alive);
+                neighbours[3].GetComponent<Cell>().setState(CellState.Alive);
+                neighbours[5].GetComponent<Cell>().setState(CellState.Alive);
+                neighbours[5].GetComponent<Cell>().getNeighbours()[6].GetComponent<Cell>().setState(CellState.Alive);
+            }
+            clickedCell.GetComponent<Cell>().setNeighbours(neighbours);
         }
+
     }
 
     /* method to changeState of cell manually with mouse clicks*/
