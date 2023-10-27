@@ -60,16 +60,16 @@ public class GameBoard : MonoBehaviour
     {
         changeState(); //change state of cells manually using mouse clicks
         generationText.text = "Current Generation: " + generation.ToString(); //set text on screen to match current generation
-
+        if (stamp)
+        {
+            stampPreset();
+        }
         if (gameRunning)  //if game is running move to next generation
         {
             nextGen(); //changes the rule state and updates the generation count
             Application.targetFrameRate = frameRate; //update the target frame rate to match the slider framerate
         }
-        if(stamp) 
-        {
-            stampPreset();
-        }
+
 
 
     }
@@ -96,17 +96,27 @@ public class GameBoard : MonoBehaviour
         generation++;
     }
 
+    /*change whether stamp is on or not */
     public void setStamp()
     {
         stamp = !stamp;
     }
 
+    /* set stamp type to oscillator*/
     public void setOscillator()
     {
         stampType = Stamps.Oscillator;
         setStamp();
     }
 
+    /*set stamp type to spaceship*/
+    public void setSpaceship()
+    {
+        stampType = Stamps.Spaceship;
+        setStamp();
+    }
+
+    /*generate a random seed*/
     public void randomSeed()
     {
         int random;
@@ -123,12 +133,6 @@ public class GameBoard : MonoBehaviour
                 }
             }
         }
-    }
-
-    public void setSpaceship()
-    {
-        stampType = Stamps.Spaceship;
-        setStamp() ;
     }
 
     /* public method for clearing the game on the clear button, destroys old board, resets generation back to 0, and draws a new board */
