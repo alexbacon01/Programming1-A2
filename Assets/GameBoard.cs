@@ -7,6 +7,7 @@ using UnityEngine.Timeline;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 
+//enums for the rules of life in simulation
 public enum Rules
 {
     Underpopulation,
@@ -17,67 +18,81 @@ public enum Rules
 };
 public class GameBoard : MonoBehaviour
 {
-    // Start is called before the first frame update
+    [Header("Game settings: ")]
     [Range(10, 50)]
-    public int boardWidth = 20;
-    private int boardHeight;
+    public int boardWidth = 20; //board width / number of columns in game, in a range between 10 and 50
+    [Range(1, 4)]
+    private int frameRate = 1; //framerate for game is in a range between 1 and 4
+    private int boardHeight; //board height is dependant on boardWidth
+    private float cellSize;
+    private float spacing = 1.5f;
+
+    [Header("Game objects: ")]
     public GameObject cell;
     public GameObject[,] stateOfBoard;
-    public float spacing = 1.5f;
-    private bool gameRunning = false;
     public GameObject mainCamera;
-    private float cellSize;
+    public UnityEngine.UI.Slider FPSSlider;
+
+    [Header("Variables for state of game: ")]
+    private bool gameRunning = false;
     private int generation;
     public Text generationText;
     private bool stamp = false;
-    public UnityEngine.UI.Slider FPSSlider;
-    [Range(1, 4)]
-    public int frameRate = 1;
+
+
 
 
     void Start()
     {
+        //inital game settings
         Application.targetFrameRate = frameRate;
         boardHeight = boardWidth / 2;
         UnityEngine.Cursor.visible = true;
         stateOfBoard = new GameObject[boardWidth, boardHeight];
         cellSize = ((mainCamera.GetComponent<Camera>().orthographicSize) / boardWidth) * 2;
+
         Debug.Log(cellSize);
-        drawBoard();
+
+        drawBoard(); //draw the initial board
  
     }
 
-    // Update is called once per frame
     void Update()
     {
-        Application.targetFrameRate = frameRate;
-        changeState();
-        generationText.text = "Current Generation: " + generation.ToString();
-        if(gameRunning)
-        {
-            nextGen();
-        }
+        Application.targetFrameRate = frameRate; //update the target frame rate to match the slider framerate
+        changeState(); //change state of cells manually using mouse clicks
+        generationText.text = "Current Generation: " + generation.ToString(); //set text on screen to match current generation
 
+        if(gameRunning)  //if game is running move to next generation
+        {
+            nextGen(); //changes the rule state and updates the generation count
+        }
 
     }
 
+    //game settings methods
+
+    /* public accessible method for start button to be able to toggle the gameRunning variable */
+    public void toggleGameRunning()
+    {
+        gameRunning = !gameRunning;
+    }
+
+    /* A method to update frame rate with the slider in game */
     public void changeFPS()
     {
         frameRate = (int)FPSSlider.value;
         Debug.Log(frameRate);
     }
-    public void nextGen()
+
+    /* updates the generation by rechecking the rule state and adding to the generation count */
+    private void nextGen()
     {
-   
         changeRuleState();
         generation++;
     }
-    public void toggleGameRunning()
-    {
-        gameRunning = !gameRunning;
-    
-    }
 
+    /* public method for clearing the game on the clear button, destroys old board, resets generation back to 0, and draws a new board */
     public void clearGame()
     {
         generation = 0;
@@ -88,54 +103,57 @@ public class GameBoard : MonoBehaviour
                 Destroy(stateOfBoard[i, j].gameObject);
             }
         }
-
         drawBoard();
     }
-    private void lineWithCamera()
+
+    /* method for finding what object the mouse clicked */
+    private GameObject mouseClicked()
     {
-        Vector3 cameraPos = mainCamera.GetComponent<Transform>().position;
-        mainCamera.GetComponent<Transform>().position = cameraPos;
+        if (Input.GetMouseButtonDown(0))
+        {
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+            if (hit.collider != null)
+            {
+                return hit.collider.gameObject;
+
+            }
+        }
+        return null;
     }
 
+    //creating game and cells methods
+    /* method for drawing the board and adding it to the stateOfBoard array also calls find neighbours to set the cells neighbours*/
     private void drawBoard()
     {
         Vector2 position;
         int numOfCells = 0; //used for naming the cells
-        float spacing = cellSize * 1.2f;
+        float spacing = cellSize * 1.2f; //sets spacing for the cells
         for (int i = 0; i < boardWidth; i++)
         {
             for (int j = 0; j < boardHeight; j++)
             {
-                position = new Vector3(i - boardWidth / 2, j - boardHeight / 2, 0) * spacing;
-                numOfCells++;
-                GameObject newCell = makeNewCell(numOfCells, position);
-                stateOfBoard[i, j] = newCell;
-                newCell.GetComponent<Cell>().setPos(i, j);
+                position = new Vector3(i - boardWidth / 2, j - boardHeight / 2, 0) * spacing; //sets position for each cell
+                numOfCells++; //variable to keep track of number of cells (for naming)
+                GameObject newCell = makeNewCell(numOfCells, position); //creates a new gameObject of a cell using the makeNewCell function
+                stateOfBoard[i, j] = newCell; //adds the new cell to the stateOfBoard array
+                newCell.GetComponent<Cell>().setPos(i, j); //sets position of cell.
             }
-
         }
-        for (int i = 0; i < boardWidth; i++) //loop to go and find neighbours had to be seprate so that all the neighbours are also initialized.
+
+        for (int i = 0; i < boardWidth; i++) //loop to go and find neighbours had to be seprate so that all the neighbours are already initialized.
         {
-            //Debug.Log(i + findNeighbours(stateOfBoard[19, 0])[i].name);
             for (int j = 0; j < boardHeight; j++)
             {
-                GameObject currentCell = stateOfBoard[i, j];
-                currentCell.GetComponent<Cell>().setNeighbours(findNeighbours(currentCell));
+                GameObject currentCell = stateOfBoard[i, j]; 
+                currentCell.GetComponent<Cell>().setNeighbours(findNeighbours(currentCell)); //set neighbours for every cell in array
             }
         }
     }
-    private void drawBackground()
-    {
-        Vector2 position = new Vector2(19, 3);
-        transform.position = position;
-    }
 
-
-
-
+    /*a function to instantiate a new cell and set state, size and name*/
     private GameObject makeNewCell(int numOfCells, Vector2 pos)
     {
-
         GameObject newCell = Instantiate(cell, pos, Quaternion.identity);
         newCell.GetComponent<Cell>().setState(CellState.Dead);
         newCell.GetComponent<Transform>().localScale = new Vector3(cellSize, cellSize, cellSize);
@@ -143,68 +161,125 @@ public class GameBoard : MonoBehaviour
         return newCell;
     }
 
+
+    //change board state methods
+
+    /* a method to check rules and returns which rule is currrently active */
     private Rules checkRules(GameObject cell)
     {
-        int aliveNeighbours = cell.GetComponent<Cell>().getAliveNeighbours();
-        Rules activeRule = Rules.NoChange;
+        int aliveNeighbours = cell.GetComponent<Cell>().getAliveNeighbours(); //number of alive neighbours
+        Rules activeRule = Rules.NoChange; //set initially to no change
 
-        if (cell.GetComponent<Cell>().getState() == CellState.Alive)
+        if (cell.GetComponent<Cell>().getState() == CellState.Alive) //if cell is alive
         {
-            if (aliveNeighbours < 2)
+            if (aliveNeighbours < 2) //if less than 2 alive neighbours
             {
-                activeRule = Rules.Underpopulation;
+                activeRule = Rules.Underpopulation; //underpopulation
             }
-            if (aliveNeighbours > 1 && aliveNeighbours < 4)
+            if (aliveNeighbours > 1 && aliveNeighbours < 4) //if more than 1 neighbour and less than 4 
             {
-                activeRule = Rules.NextGen;
+                activeRule = Rules.NextGen; //Next gen
             }
-            if (aliveNeighbours > 3)
+            if (aliveNeighbours > 3) //if more than 3 neighbours
             {
-                activeRule = Rules.OverPopulation;
+                activeRule = Rules.OverPopulation; //Overpopulation
             }
         }
-        else
+        else //if cell is dead
         {
-            if (aliveNeighbours == 3)
+            if (aliveNeighbours == 3) //if 3 neighbours
             {
-                activeRule = Rules.Reproduction;
+                activeRule = Rules.Reproduction; //Reproduction
             }
         }
-        Debug.Log(activeRule.ToString());
-        return activeRule;
-
+        return activeRule; //return active rule
     }
+
+    /* method to changeState of cell manually with mouse clicks*/
+    private void changeState()
+    {
+        CellState newState;
+        if (mouseClicked() != null)
+        {
+            CellState currentState = mouseClicked().GetComponent<Cell>().getState(); //gets current state
+            if (currentState == CellState.Alive) //sets cell state to opposite of whatever it is
+            {
+                newState = CellState.Dead;
+            }
+            else
+            {
+                newState = CellState.Alive;
+            }
+
+            mouseClicked().GetComponent<Cell>().setState(newState); //set the new state of the cell
+
+            if(gameRunning == false)
+            {
+                recountNeighbours(); //recount alive neighbours
+            }
+        }
+    }
+
+    /* method to change the state of the baord based on the rule set by check rules */
+    private void changeRuleState()
+    {
+        Rules currentRule = Rules.NoChange;
+
+        for (int i = 0; i < boardWidth; i++)
+        {
+            for (int j = 0; j < boardHeight; j++)
+            {
+                currentRule = checkRules(stateOfBoard[i, j]); 
+
+                //changes state of cell based on the current rule 
+                if (currentRule == Rules.Underpopulation)
+                {
+                    stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Dead);
+
+                }
+                else if (currentRule == Rules.NextGen)
+                {
+                    stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Alive);
+                }
+                else if (currentRule == Rules.OverPopulation)
+                {
+                    stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Dead);
+                }
+                else if (currentRule == Rules.Reproduction)
+                {
+                    stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Alive);
+                }
+            }
+
+        }
+        recountNeighbours(); //recount alive neighbours 
+    }
+
+    //neighbour methods
+
+    /* method to recount alive neighbours */
+    private void recountNeighbours()
+    {
+        for (int i = 0; i < boardWidth; i++)
+        {
+            for (int j = 0; j < boardHeight; j++)
+            {
+                stateOfBoard[i, j].GetComponent<Cell>().setAliveNeighbours();
+            }
+        }
+    }
+    /* Method for finding the array of neighbours for each cell, cells wrap to other side of the board*/
     private GameObject[] findNeighbours(GameObject cell)
     {
-        int rowPos = cell.GetComponent<Cell>().getRowPos();
-        int colPos = cell.GetComponent<Cell>().getColPos();
-        GameObject[] neighbours = new GameObject[8];
+        int rowPos = cell.GetComponent<Cell>().getRowPos(); //get row position from cell
+        int colPos = cell.GetComponent<Cell>().getColPos(); //get col position from cell
+
+        GameObject[] neighbours = new GameObject[8]; //array of neighbours
+
+        //bools for edge cases
         bool colEdgeCase = false;
         bool rowEdgeCase = false;
-        /*
-        GameObject[] neighbours = {
-        stateOfBoard[colPos, rowPos - 1], // cell under [0]
-        stateOfBoard[colPos, rowPos + 1], //cell above [1]
-        stateOfBoard[colPos - 1, rowPos], //cell on left [2]
-        stateOfBoard[colPos + 1, rowPos], //cell on right [3]
-        stateOfBoard[colPos - 1, rowPos - 1], //cell left and down [4]
-        stateOfBoard[colPos + 1, rowPos + 1], //cell right and up [5]
-        stateOfBoard[colPos - 1, rowPos + 1], //cell left and up [6] 
-        stateOfBoard[colPos + 1, rowPos - 1] //cell right and down [7]
-    };
-        
-        neighbours[0] = stateOfBoard[colPos, rowPos - 1]; // cell under [0]
-        neighbours[1] = stateOfBoard[colPos, rowPos + 1]; //cell above [1]
-        neighbours[2] = stateOfBoard[colPos - 1, rowPos]; //cell on left [2]
-        neighbours[3] = stateOfBoard[colPos + 1, rowPos]; //cell on right [3]
-        neighbours[4] = stateOfBoard[colPos - 1, rowPos - 1]; //cell left and down [4]
-        neighbours[5] = stateOfBoard[colPos + 1, rowPos + 1]; //cell right and up [5]
-        neighbours[6] = stateOfBoard[colPos - 1, rowPos + 1]; //cell left and up [6]
-        neighbours[7] = stateOfBoard[colPos + 1, rowPos - 1]; //cell right and down [7]
-        
-        */
 
-        //set Edge Cases
         if (colPos == 0 || colPos == boardWidth - 1)
         {
             colEdgeCase = true;
@@ -324,98 +399,7 @@ public class GameBoard : MonoBehaviour
                 neighbours[7] = stateOfBoard[0, boardHeight - 1]; //cell right and down [7]
             }
         }
-
         return neighbours;
-    }
-
-    private GameObject mouseClicked()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
-            if (hit.collider != null)
-            {
-                return hit.collider.gameObject;
-
-            }
-        }
-        return null;
-    }
-
-    private void changeState()
-    {
-
-        CellState newState;
-
-
-
-
-        if (mouseClicked() != null)
-        {
-            CellState currentState = mouseClicked().GetComponent<Cell>().getState();
-            if (currentState == CellState.Alive)
-            {
-                newState = CellState.Dead;
-            }
-            else
-            {
-                newState = CellState.Alive;
-            }
-
-            mouseClicked().GetComponent<Cell>().setState(newState);
-            if(gameRunning == false)
-            {
-                recountNeighbours();
-            }
-        }
-
-
-    }
-    private void recountNeighbours()
-    {
-        for (int i = 0; i < boardWidth; i++)
-        {
-
-            for (int j = 0; j < boardHeight; j++)
-            {
-                stateOfBoard[i, j].GetComponent<Cell>().setAliveNeighbours();
-            }
-        }
-    }
-    private void changeRuleState()
-    {
-        Rules currentRule = Rules.NoChange;
-
-
-        for (int i = 0; i < boardWidth; i++)
-        {
-            for (int j = 0; j < boardHeight; j++)
-            {
-                currentRule = checkRules(stateOfBoard[i, j]);
-
-                if (currentRule == Rules.Underpopulation)
-                {
-                    stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Dead);
-
-                }
-                else if (currentRule == Rules.NextGen)
-                {
-                    stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Alive);
-                }
-                else if (currentRule == Rules.OverPopulation)
-                {
-                    stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Dead);
-                }
-                else if (currentRule == Rules.Reproduction)
-                {
-                    stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Alive);
-                }
-            }
-
-        }
-        // Debug.Log(currentRule.ToString());
-        recountNeighbours();
     }
 }
 
