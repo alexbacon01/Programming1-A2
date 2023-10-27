@@ -1,11 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Timeline;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 //enums for the rules of life in simulation
 public enum Rules
@@ -15,6 +9,12 @@ public enum Rules
     OverPopulation,
     Reproduction,
     NoChange
+};
+
+public enum Stamps
+{
+    Oscillator,
+    Spaceship
 };
 public class GameBoard : MonoBehaviour
 {
@@ -38,14 +38,12 @@ public class GameBoard : MonoBehaviour
     private int generation;
     public Text generationText;
     private bool stamp = false;
-
-
+    Stamps stampShape;
 
 
     void Start()
     {
         //inital game settings
-        Application.targetFrameRate = frameRate;
         boardHeight = boardWidth / 2;
         UnityEngine.Cursor.visible = true;
         stateOfBoard = new GameObject[boardWidth, boardHeight];
@@ -54,18 +52,18 @@ public class GameBoard : MonoBehaviour
         Debug.Log(cellSize);
 
         drawBoard(); //draw the initial board
- 
+
     }
 
     void Update()
     {
-        Application.targetFrameRate = frameRate; //update the target frame rate to match the slider framerate
         changeState(); //change state of cells manually using mouse clicks
         generationText.text = "Current Generation: " + generation.ToString(); //set text on screen to match current generation
 
-        if(gameRunning)  //if game is running move to next generation
+        if (gameRunning)  //if game is running move to next generation
         {
             nextGen(); //changes the rule state and updates the generation count
+            Application.targetFrameRate = frameRate; //update the target frame rate to match the slider framerate
         }
 
     }
@@ -96,9 +94,9 @@ public class GameBoard : MonoBehaviour
     public void clearGame()
     {
         generation = 0;
-        for(int i = 0; i<boardWidth; i++)
+        for (int i = 0; i < boardWidth; i++)
         {
-            for(int j = 0; j<boardHeight; j++)
+            for (int j = 0; j < boardHeight; j++)
             {
                 Destroy(stateOfBoard[i, j].gameObject);
             }
@@ -145,7 +143,7 @@ public class GameBoard : MonoBehaviour
         {
             for (int j = 0; j < boardHeight; j++)
             {
-                GameObject currentCell = stateOfBoard[i, j]; 
+                GameObject currentCell = stateOfBoard[i, j];
                 currentCell.GetComponent<Cell>().setNeighbours(findNeighbours(currentCell)); //set neighbours for every cell in array
             }
         }
@@ -195,6 +193,21 @@ public class GameBoard : MonoBehaviour
         return activeRule; //return active rule
     }
 
+    /*a method to stamp a preset onto the board*/
+    private void stampPreset()
+    {
+        if (stamp)
+        {
+            if(stampShape == Stamps.Oscillator)
+            {
+
+            } else if (stampShape == Stamps.Spaceship)
+            {
+
+            }
+        }
+    }
+
     /* method to changeState of cell manually with mouse clicks*/
     private void changeState()
     {
@@ -213,7 +226,7 @@ public class GameBoard : MonoBehaviour
 
             mouseClicked().GetComponent<Cell>().setState(newState); //set the new state of the cell
 
-            if(gameRunning == false)
+            if (gameRunning == false)
             {
                 recountNeighbours(); //recount alive neighbours
             }
@@ -229,7 +242,7 @@ public class GameBoard : MonoBehaviour
         {
             for (int j = 0; j < boardHeight; j++)
             {
-                currentRule = checkRules(stateOfBoard[i, j]); 
+                currentRule = checkRules(stateOfBoard[i, j]);
 
                 //changes state of cell based on the current rule 
                 if (currentRule == Rules.Underpopulation)

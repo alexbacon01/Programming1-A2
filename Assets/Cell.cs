@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public enum CellState
@@ -14,20 +12,15 @@ public class Cell : MonoBehaviour
     private int colPos;
     private int rowPos;
     private int aliveNeighbours;
-    int numCalled = 0;
-    // Start is called before the first frame update
+    private int numCalled = 0;
 
     void Start()
     {
-    //setAliveNeighbours();
     }
 
-    // Update is called once per frame
     void Update()
     {
         changeColour();
- 
-
     }
 
     private void changeColour()
@@ -45,7 +38,6 @@ public class Cell : MonoBehaviour
     public void setState(CellState newState)
     {
         state = newState;
-   
     }
 
     public CellState getState()
@@ -79,7 +71,7 @@ public class Cell : MonoBehaviour
     public void setAliveNeighbours()
     {
         aliveNeighbours = 0;
-        
+
         for (int i = 0; i < neighbours.Length; i++)
         {
             if (neighbours[i].GetComponent<Cell>().getState() == CellState.Alive && aliveNeighbours < neighbours.Length)
@@ -87,7 +79,6 @@ public class Cell : MonoBehaviour
                 aliveNeighbours++;
             }
         }
-        
         Debug.Log("num called" + numCalled);
         numCalled++;
     }
