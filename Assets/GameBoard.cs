@@ -21,9 +21,10 @@ public class GameBoard : MonoBehaviour
     public GameObject cell;
     public GameObject[,] stateOfBoard;
     public float spacing = 1.5f;
-    public bool gameRunning = false;
+    private bool gameRunning = false;
     public GameObject mainCamera;
     private float cellSize;
+    private int generation;
 
     void Start()
     {
@@ -33,7 +34,7 @@ public class GameBoard : MonoBehaviour
         cellSize = ((mainCamera.GetComponent<Camera>().orthographicSize) / boardWidth) * 2;
         Debug.Log(cellSize);
         drawBoard();
-        drawBackground();
+ 
     }
 
     // Update is called once per frame
@@ -42,12 +43,35 @@ public class GameBoard : MonoBehaviour
         changeState();
         if(gameRunning)
         {
-            changeRuleState();
+            nextGen();
         }
 
 
     }
+    public void nextGen()
+    {
+        changeRuleState();
+        generation++;
+    }
+    public void toggleGameRunning()
+    {
+        gameRunning = !gameRunning;
+    
+    }
 
+    public void clearGame()
+    {
+        generation = 0;
+        for(int i = 0; i<boardWidth; i++)
+        {
+            for(int j = 0; j<boardHeight; j++)
+            {
+                Destroy(stateOfBoard[i, j].gameObject);
+            }
+        }
+
+        drawBoard();
+    }
     private void lineWithCamera()
     {
         Vector3 cameraPos = mainCamera.GetComponent<Transform>().position;
