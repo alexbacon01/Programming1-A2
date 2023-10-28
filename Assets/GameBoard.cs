@@ -45,6 +45,7 @@ public class GameBoard : MonoBehaviour
     void Start()
     {
         //inital game settings
+        QualitySettings.vSyncCount = 0;
         boardHeight = boardWidth / 2;
         UnityEngine.Cursor.visible = true;
         stateOfBoard = new GameObject[boardWidth, boardHeight];
@@ -58,6 +59,7 @@ public class GameBoard : MonoBehaviour
 
     void Update()
     {
+        Application.targetFrameRate = frameRate; //update the target frame rate to match the slider framerate
         changeState(); //change state of cells manually using mouse clicks
         generationText.text = "Current Generation: " + generation.ToString(); //set text on screen to match current generation
         if (stamp)
@@ -67,11 +69,10 @@ public class GameBoard : MonoBehaviour
         if (gameRunning)  //if game is running move to next generation
         {
             nextGen(); //changes the rule state and updates the generation count
-            Application.targetFrameRate = frameRate; //update the target frame rate to match the slider framerate
         }
 
 
-
+        recountNeighbours(); //recount alive neighbours 
     }
 
     //game settings methods
@@ -254,7 +255,7 @@ public class GameBoard : MonoBehaviour
                 neighbours[3].GetComponent<Cell>().setState(CellState.Alive);
 
             }
-            else if (stampType == Stamps.Spaceship)
+            if (stampType == Stamps.Spaceship)
             {
                 clickedCell.GetComponent<Cell>().setState(CellState.Alive);
                 neighbours[2].GetComponent<Cell>().setState(CellState.Alive);
@@ -263,6 +264,7 @@ public class GameBoard : MonoBehaviour
                 neighbours[5].GetComponent<Cell>().getNeighbours()[6].GetComponent<Cell>().setState(CellState.Alive);
             }
             clickedCell.GetComponent<Cell>().setNeighbours(neighbours);
+            clickedCell.GetComponent<Cell>().setAliveNeighbours();
         }
 
     }
@@ -285,10 +287,6 @@ public class GameBoard : MonoBehaviour
 
             mouseClicked().GetComponent<Cell>().setState(newState); //set the new state of the cell
 
-            if (gameRunning == false)
-            {
-                recountNeighbours(); //recount alive neighbours
-            }
         }
     }
 
@@ -309,11 +307,11 @@ public class GameBoard : MonoBehaviour
                     stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Dead);
 
                 }
-                else if (currentRule == Rules.NextGen)
+                 if (currentRule == Rules.NextGen)
                 {
                     stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Alive);
                 }
-                else if (currentRule == Rules.OverPopulation)
+                 if (currentRule == Rules.OverPopulation)
                 {
                     stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Dead);
                 }
@@ -324,7 +322,6 @@ public class GameBoard : MonoBehaviour
             }
 
         }
-        recountNeighbours(); //recount alive neighbours 
     }
 
     //neighbour methods
