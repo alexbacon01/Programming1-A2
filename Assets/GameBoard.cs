@@ -1,4 +1,3 @@
-using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -121,14 +120,16 @@ public class GameBoard : MonoBehaviour
     public void randomSeed()
     {
         int random;
-        for(int i =0; i < boardWidth; i++)
+        for (int i = 0; i < boardWidth; i++)
         {
-            for(int j =0; j< boardHeight; j++) {
+            for (int j = 0; j < boardHeight; j++)
+            {
                 random = Random.Range(1, 101);
                 if (random < 85)
                 {
-                    stateOfBoard[i,j].GetComponent<Cell>().setState(CellState.Dead); 
-                } else
+                    stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Dead);
+                }
+                else
                 {
                     stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Alive);
                 }
@@ -243,7 +244,7 @@ public class GameBoard : MonoBehaviour
     private void stampPreset()
     {
         GameObject clickedCell = mouseClicked();
-        if(clickedCell != null)
+        if (clickedCell != null)
         {
             GameObject[] neighbours = clickedCell.GetComponent<Cell>().getNeighbours();
 
@@ -307,11 +308,11 @@ public class GameBoard : MonoBehaviour
                     stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Dead);
 
                 }
-                 if (currentRule == Rules.NextGen)
+                if (currentRule == Rules.NextGen)
                 {
                     stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Alive);
                 }
-                 if (currentRule == Rules.OverPopulation)
+                if (currentRule == Rules.OverPopulation)
                 {
                     stateOfBoard[i, j].GetComponent<Cell>().setState(CellState.Dead);
                 }
